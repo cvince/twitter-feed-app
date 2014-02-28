@@ -18,6 +18,7 @@
   "homepage": "https://github.com/cvince/twitter-feed-app",
   "devDependencies": {
     "express": "~3.4.8",
-    "twit": "~1.1.12"
+    "twit": "~1.1.12",
+    "express.io": "~1.1.13"
   }
 }

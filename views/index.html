@@ -2,13 +2,47 @@
 <head></head>
 <body>
 
-asdf
+<form id="name-input" action="submit">
+  Enter Twitter Screen Name @<input type="text" name="fname"><input type="submit">
+</form>
+
+<div id="tweet-list"></div>
 
 </body>
 
 
 <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
 <script>
+
+$( "#name-input" ).submit(function(event) {
+  var formData = $('#name-input input').val();
+  $('#tweet-list').html('fetching');
+  getUser(formData);
+  event.preventDefault();
+})
+
+
+function getUser(screenname){
+
+  $.ajax({
+    url: 'http://localhost:5050/api/'+screenname,
+  }).done(
+  function(data, status){
+    $('#tweet-list').html('');
+    for(var i in data){
+      var parsedData = data[i];
+      console.log(parsedData);
+      renderList(parsedData);
+    }
+  });
+
+}
+
+function renderList(input){
+  var output = '<div class="output-item"><img src="'+input.profile_img+'"><p>'+input.tweet+'</p></div>';
+  $('#tweet-list').append(output);
+}
+
 
 
 </script>
