@@ -43,12 +43,12 @@ io.on('stream-twt', function(data){
 
 
 
-// $( "#name-input" ).submit(function(event) {
-//   var formData = $('#name-input input').val();
-//   $('#tweet-list').html('fetching');
-//   getUser(formData);
-//   event.preventDefault();
-// })
+$( "#name-input" ).submit(function(event) {
+  var formData = $('#name-input input').val();
+  $('#tweet-list').html('fetching');
+  getUser(formData);
+  event.preventDefault();
+})
 
 
 // function renderList(input){
