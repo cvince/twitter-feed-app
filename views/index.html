@@ -11,39 +11,45 @@
 </body>
 
 
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js"></script>
 <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
 <script>
 
-$( "#name-input" ).submit(function(event) {
-  var formData = $('#name-input input').val();
-  $('#tweet-list').html('fetching');
-  getUser(formData);
-  event.preventDefault();
+//templates
+var T_tweets = '<div class="tweet">'+
+  '<img src="' + '<%= profile_img %>">' +
+  '<p>' + '<%= tweet %>' +
+  '</div>';
+
+var T_tweets_comp = _.template(T_tweets);
+
+//io
+var io = io.connect('http://localhost');
+
+io.emit('ready');
+
+io.on('stream-twt', function(data){
+  for(var i in data){
+    $('#tweet-list').append(T_tweets_comp(data[i]));
+  }
 })
 
 
-function getUser(screenname){
 
-  $.ajax({
-    url: 'http://localhost:5050/api/'+screenname,
-  }).done(
-  function(data, status){
-    $('#tweet-list').html('');
-    for(var i in data){
-      var parsedData = data[i];
-      console.log(parsedData);
-      renderList(parsedData);
-    }
-  });
-
-}
-
-function renderList(input){
-  var output = '<div class="output-item"><img src="'+input.profile_img+'"><p>'+input.tweet+'</p></div>';
-  $('#tweet-list').append(output);
-}
+// $( "#name-input" ).submit(function(event) {
+//   var formData = $('#name-input input').val();
+//   $('#tweet-list').html('fetching');
+//   getUser(formData);
+//   event.preventDefault();
+// })
 
 
+// function renderList(input){
+//   var output = '<div class="output-item"><img src="'+input.profile_img+'"><p>'+input.tweet+'</p></div>';
+//   $('#tweet-list').append(output);
+// }
 
 </script>
 </html>

@@ -1,5 +1,5 @@
-var express = require('express.io')
-var app = express();
+var express = require('express.io');
+var app = express().http().io();
 
 var Twit = require('twit')
 
@@ -10,14 +10,13 @@ var T = new Twit({
   , access_token_secret:  '8kxCHzT7DZgTgvBc4sMuZQx8RdKv6KZyEMpKM9XIJYZ18'
 })
 
-app.use('/', express.static(__dirname + '/views'));
 
-app.use(express.logger('dev'));
 
-T.get('statuses/user_timeline', { screen_name: req.params.id , count: 10 }, function(err, data) {
+
+
+T_parse = function(err, data){
   if(err){
     console.log('error');
-    res.end('error');
   }else{
     var dataOut = [];
     for(var i in data){
@@ -26,14 +25,28 @@ T.get('statuses/user_timeline', { screen_name: req.params.id , count: 10 }, func
         profile_img: data[i].user.profile_image_url
       });
     }
-    res.send(dataOut);
+    return dataOut;
   }
+}
+
+app.get('/', function(req, res){
+  res.sendfile(__dirname + '/views/index.html');
 });
 
-io.sockets.on('connection'
+var T_stream = T.stream('statuses/filter?follow=116678841')
 
-)
+T_stream.on('tweet', function (tweet) {
+  console.log(tweet);
+})
 
+
+app.io.route('ready', function(req, res){
+
+  T.get('statuses/user_timeline', { screen_name: 'cvince86' , count: 10 }, function(err, data) {
+    req.io.emit('stream-twt', T_parse(err, data));
+  });
+
+});
 
 var port = process.env.PORT || 5050;
 app.listen(port, function () {
