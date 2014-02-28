@@ -30,10 +30,15 @@ var io = io.connect('http://localhost');
 
 io.emit('ready');
 
-io.on('stream-twt', function(data){
+io.on('populate-twt', function(data){
   for(var i in data){
     $('#tweet-list').append(T_tweets_comp(data[i]));
   }
+})
+
+io.on('stream-twt', function(data){
+    console.log(T_tweets_comp(data))
+    $('#tweet-list').prepend(T_tweets_comp(data));
 })
 
 

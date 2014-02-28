@@ -11,13 +11,7 @@ var T = new Twit({
 })
 
 
-
-
-
-T_parse = function(err, data){
-  if(err){
-    console.log('error');
-  }else{
+T_parse = function(data){
     var dataOut = [];
     for(var i in data){
       dataOut.push(
@@ -26,25 +20,33 @@ T_parse = function(err, data){
       });
     }
     return dataOut;
-  }
+}
+
+T_single_parse = function(data){
+  return { tweet: data.text, profile_img: data.user.profile_image_url } ;
 }
 
 app.get('/', function(req, res){
   res.sendfile(__dirname + '/views/index.html');
 });
 
-var T_stream = T.stream('statuses/filter?follow=116678841')
-
-T_stream.on('tweet', function (tweet) {
-  console.log(tweet);
-})
-
 
 app.io.route('ready', function(req, res){
 
   T.get('statuses/user_timeline', { screen_name: 'cvince86' , count: 10 }, function(err, data) {
-    req.io.emit('stream-twt', T_parse(err, data));
+    if(err){
+      console.log(err);
+    }else{
+      req.io.emit('populate-twt', T_parse(data));
+    }
   });
+
+  var T_stream = T.stream('statuses/filter', { follow: 116678841 })
+
+  T_stream.on('tweet', function (data) {
+    console.log(data.user.profile_image_url);
+    req.io.emit('stream-twt', T_single_parse(data));
+  })
 
 });
 
