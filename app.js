@@ -10,6 +10,7 @@ var T = new Twit({
   , access_token_secret:  '8kxCHzT7DZgTgvBc4sMuZQx8RdKv6KZyEMpKM9XIJYZ18'
 })
 
+var userID = '';
 
 T_parse = function(data){
     var dataOut = [];
@@ -18,6 +19,7 @@ T_parse = function(data){
       { tweet: data[i].text,
         profile_img: data[i].user.profile_image_url
       });
+      userID = data[i].user.id;
     }
     return dataOut;
 }
@@ -33,7 +35,9 @@ app.get('/', function(req, res){
 
 app.io.route('ready', function(req, res){
 
-  T.get('statuses/user_timeline', { screen_name: 'cvince86' , count: 10 }, function(err, data) {
+  console.log(req.data);
+
+  T.get('statuses/user_timeline', { screen_name: req.data , count: 10 }, function(err, data) {
     if(err){
       console.log(err);
     }else{
@@ -41,7 +45,7 @@ app.io.route('ready', function(req, res){
     }
   });
 
-  var T_stream = T.stream('statuses/filter', { follow: 116678841 })
+  var T_stream = T.stream('statuses/filter', { follow: userID })
 
   T_stream.on('tweet', function (data) {
     console.log(data.user.profile_image_url);

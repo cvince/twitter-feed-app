@@ -20,7 +20,7 @@
 //templates
 var T_tweets = '<div class="tweet">'+
   '<img src="' + '<%= profile_img %>">' +
-  '<p>' + '<%= tweet %>' +
+  '<p>' + '<%= tweet %>' + '</p>' +
   '</div>';
 
 var T_tweets_comp = _.template(T_tweets);
@@ -31,6 +31,7 @@ var io = io.connect('http://localhost');
 io.emit('ready');
 
 io.on('populate-twt', function(data){
+  $('#tweet-list').html(' ');
   for(var i in data){
     $('#tweet-list').append(T_tweets_comp(data[i]));
   }
@@ -41,15 +42,12 @@ io.on('stream-twt', function(data){
     $('#tweet-list').prepend(T_tweets_comp(data));
 })
 
-
-
 $( "#name-input" ).submit(function(event) {
   var formData = $('#name-input input').val();
   $('#tweet-list').html('fetching');
-  getUser(formData);
+  io.emit('ready', formData);
   event.preventDefault();
 })
-
 
 // function renderList(input){
 //   var output = '<div class="output-item"><img src="'+input.profile_img+'"><p>'+input.tweet+'</p></div>';
